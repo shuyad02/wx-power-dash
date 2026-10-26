@@ -191,32 +191,22 @@ Open `http://localhost:3000` in your browser.
 
 ---
 
-## 7. Video Presentation Guide (Max 10 Minutes)
+## 7. Demo Video & Presentation
 
-The submission video is structured into two 5-minute halves:
+Watch the comprehensive 10-minute presentation demonstrating both commercial trading value and the technical engineering implementation:
 
-### Part 1: Client Pitch (To Energy Utility Trading Team) — [0:00 - 5:00]
-1. **The Core Pain Point (1 min)**:
-   - "Every day at 11:00–12:00 UTC, your desk must bid in the UK Day-Ahead power market to balance demand against intermittent wind outturn."
-   - "Under-procuring leads to penal Cash-out imbalance exposure under BSC settlement; over-procuring locks in unnecessary thermal power costs."
-2. **Platform Demonstration (2.5 mins)**:
-   - **Dashboard**: Highlighting January 2026 real-time forecast overlay against actuals.
-   - **Forecast Explorer**: Selecting delivery dates, viewing how forecasts evolve closer to delivery, and inspecting the 48 Half-Hourly procurement recommendations.
-   - **Accuracy Analytics**: Reviewing the quantified MAE (~850 MW) and showing the diurnal error pattern.
-3. **Business Value & ROI (1.5 mins)**:
-   - "By hedging against the quantified diurnal MAE buffer, your desk avoids extreme imbalance penalties while maximizing renewable capture."
+📺 **[Watch Full Video Walkthrough (YouTube)](https://youtu.be/DEMO_LINK_HERE)**
 
-### Part 2: Technical Walkthrough (To Tech Lead) — [5:00 - 10:00]
-1. **Architecture & Design Principles (1.5 mins)**:
-   - Decoupled FastAPI backend + React Vite frontend.
-   - Live stream integration with Elexon BMRS `FUELHH` and `WINDFOR` datasets.
-   - Cache strategy: In-memory TTLCache preventing rate limits and guaranteeing sub-50ms dashboard response times.
-2. **Analysis Pipeline & Code Walkthrough (2 mins)**:
-   - `analytics.py`: Walk through the vectorised Pandas implementation of the D-1 12:00 cutoff logic.
-   - Robust error handling: MAPE zero-division guard, correlation nan-check, and fallback timestamps.
-3. **Engineering Practices & Deployment (1.5 mins)**:
-   - Multi-stage Docker containers with healthchecks.
-   - Production Nginx reverse proxy and Vercel/Heroku cloud readiness.
+### Video Structure
+- **Part 1 (0:00 – 4:50) · Client Demonstration & Procurement Desk Pitch**
+  - UK Day-Ahead power market context and Elexon Cash-out imbalance exposure.
+  - Live walkthrough of the WindWatch Dashboard, interactive half-hourly evolution, and the 48-period settlement schedule.
+  - Diurnal risk modeling and automated procurement guidance for energy traders.
+- **Part 2 (4:50 – 9:50) · Technical Architecture & Engineering Deep-Dive**
+  - Decoupled FastAPI and React 18 architecture with Elexon BMRS streaming ingestion.
+  - Implementation of the strict D-1 12:00 UTC auction gate closure cutoff logic.
+  - Performance optimization via in-memory TTLCache and vectorized NumPy/Pandas computation.
+  - Multi-stage Docker containerization, health checks, and cloud deployment setup.
 
 ---
 
