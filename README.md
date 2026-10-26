@@ -1,6 +1,6 @@
 # WindWatch — UK Day-Ahead Wind Forecast & Procurement Platform
 
-> **Live Application**: [https://windwatch-gb.vercel.app](https://windwatch-gb.vercel.app) *(or your deployed Vercel / Heroku URL)*  
+> **Live Application**: [https://wx-power-dash.vercel.app](https://wx-power-dash.vercel.app)  
 > **Target Delivery Period**: January 2026 (GB National Grid)  
 > **Data Authority**: Elexon BMRS Insights Solution API (`FUELHH` & `WINDFOR`)
 
