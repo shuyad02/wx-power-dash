@@ -167,11 +167,13 @@ const LINE_COLORS = [
 export default function ForecastExplorer() {
   const [selectedDate, setSelectedDate] = useState('2026-01-15');
   const [filterThreshold, setFilterThreshold] = useState('all');
+  const [justRefreshed, setJustRefreshed] = useState(false);
 
   // Query forecast evolution for selected delivery date
   const {
     data: evolutionData,
     isLoading: isEvolutionLoading,
+    isFetching: isEvolutionFetching,
     isError: isEvolutionError,
     error: evolutionErr,
     refetch: refetchEvolution,
@@ -185,11 +187,25 @@ export default function ForecastExplorer() {
   const {
     data: actualsData,
     isLoading: isActualsLoading,
+    isFetching: isActualsFetching,
+    refetch: refetchActuals,
   } = useQuery({
     queryKey: ['actuals', selectedDate],
     queryFn: () => fetchActuals(selectedDate, selectedDate),
     retry: 2,
   });
+
+  const isRefreshing = isEvolutionFetching || isActualsFetching;
+
+  const handleRefresh = async () => {
+    try {
+      await Promise.all([refetchEvolution(), refetchActuals()]);
+      setJustRefreshed(true);
+      setTimeout(() => setJustRefreshed(false), 2500);
+    } catch (e) {
+      console.error('Refresh failed', e);
+    }
+  };
 
   // Process and merge data for the multi-line chart
   const { chartData, publishRuns, tableData, summaryStats } = useMemo(() => {
@@ -358,12 +374,23 @@ export default function ForecastExplorer() {
             />
 
             <button
-              onClick={() => refetchEvolution()}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-sm font-medium transition-colors"
-              title="Refresh"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer select-none ${
+                justRefreshed
+                  ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/50'
+                  : 'bg-slate-700 hover:bg-slate-600 active:scale-95 text-slate-200 border border-slate-600'
+              } disabled:opacity-60 disabled:cursor-not-allowed`}
+              title="Fetch latest data from Elexon"
             >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
+              <RefreshCw
+                className={`w-4 h-4 ${
+                  isRefreshing ? 'animate-spin text-blue-400' : justRefreshed ? 'text-emerald-400' : 'text-slate-300'
+                }`}
+              />
+              <span>
+                {isRefreshing ? 'Refreshing...' : justRefreshed ? 'Updated!' : 'Refresh'}
+              </span>
             </button>
           </div>
         </div>
