@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   LineChart,
@@ -22,7 +22,132 @@ import {
   TrendingDown,
   Info,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from 'lucide-react';
+
+/* ── Custom Calendar Popup ────────────────────────────── */
+function CalendarPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  // Only January 2026
+  const year = 2026;
+  const month = 0; // January
+  const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+  // First day of Jan 2026 = Thursday (4)
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = 31;
+
+  const selectedDay = value ? parseInt(value.split('-')[2], 10) : null;
+
+  // Close on outside click
+  useEffect(() => {
+    function handle(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    if (open) document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [open]);
+
+  function selectDay(d) {
+    const dd = String(d).padStart(2, '0');
+    onChange(`2026-01-${dd}`);
+    setOpen(false);
+  }
+
+  // Build grid cells
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const displayDate = value
+    ? new Date(value + 'T00:00:00Z').toLocaleDateString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC',
+      })
+    : 'Select date';
+
+  return (
+    <div className="relative" ref={ref}>
+      {/* Trigger button */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2 bg-[#0f172a] px-3 py-2 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <Calendar className="w-4 h-4 text-blue-400 flex-shrink-0" />
+        <span className="text-slate-400 text-xs font-medium">Delivery Date:</span>
+        <span className="text-white text-sm font-bold">{displayDate}</span>
+        <ChevronRight className={`w-3 h-3 text-slate-400 transition-transform ${open ? 'rotate-90' : ''}`} />
+      </button>
+
+      {/* Dropdown Calendar */}
+      {open && (
+        <div className="absolute top-full left-0 mt-2 z-50 bg-[#1e293b] border border-slate-600 rounded-xl shadow-2xl p-4 w-72 animate-fade-in">
+          {/* Month header */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-white font-bold text-sm">January 2026</span>
+            <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-white">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Day-of-week headers */}
+          <div className="grid grid-cols-7 mb-1">
+            {DAYS.map((d) => (
+              <div key={d} className="text-center text-xs text-slate-500 font-semibold py-1">
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Date grid */}
+          <div className="grid grid-cols-7 gap-0.5">
+            {cells.map((day, i) =>
+              day === null ? (
+                <div key={`empty-${i}`} />
+              ) : (
+                <button
+                  key={day}
+                  onClick={() => selectDay(day)}
+                  className={`
+                    w-full aspect-square flex items-center justify-center text-sm rounded-lg font-medium transition-all
+                    ${day === selectedDay
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                      : 'text-slate-300 hover:bg-blue-500/20 hover:text-white'}
+                  `}
+                >
+                  {day}
+                </button>
+              )
+            )}
+          </div>
+
+          {/* Quick selects */}
+          <div className="mt-3 pt-3 border-t border-slate-700">
+            <p className="text-xs text-slate-500 mb-2">Quick select:</p>
+            <div className="flex flex-wrap gap-1.5">
+              {[1, 5, 10, 15, 20, 25, 31].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => selectDay(d)}
+                  className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
+                    d === selectedDay
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-blue-500/30 hover:text-white'
+                  }`}
+                >
+                  Jan {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 import { fetchForecastEvolution, fetchActuals } from '../api/endpoints.js';
 import KPICard from '../components/KPICard.jsx';
 import LoadingSpinner, { SkeletonChart } from '../components/LoadingSpinner.jsx';
@@ -227,19 +352,10 @@ export default function ForecastExplorer() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-[#0f172a] px-3 py-2 rounded-lg border border-slate-700">
-              <Calendar className="w-4 h-4 text-blue-400" />
-              <label htmlFor="delivery-date-input" className="text-slate-400 text-xs font-medium">Delivery Date:</label>
-              <input
-                id="delivery-date-input"
-                type="date"
-                min="2026-01-01"
-                max="2026-01-31"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="bg-transparent text-white text-sm font-semibold focus:outline-none cursor-pointer"
-              />
-            </div>
+            <CalendarPicker
+              value={selectedDate}
+              onChange={setSelectedDate}
+            />
 
             <button
               onClick={() => refetchEvolution()}
