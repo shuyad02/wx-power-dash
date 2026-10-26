@@ -1,8 +1,30 @@
 {
   "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/actuals",
+      "destination": "/api/actuals"
+    },
+    {
+      "source": "/api/forecasts/latest",
+      "destination": "/api/forecasts/latest"
+    },
+    {
+      "source": "/api/forecasts/evolution",
+      "destination": "/api/forecasts/evolution"
+    },
+    {
+      "source": "/api/forecasts",
+      "destination": "/api/forecasts/index"
+    },
+    {
+      "source": "/api/accuracy",
+      "destination": "/api/accuracy"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
