@@ -56,7 +56,27 @@ Because wind generation is weather-dependent and non-dispatchable:
 
 ---
 
-## 3. Key Analytical Logic & Methodology
+## 3. Technology Stack
+
+| Layer | Technology | Version / Spec | Purpose & Architectural Decision |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | **React** | `18.3.1` | Component-driven Single Page Application (SPA) architecture |
+| **Build & Tooling** | **Vite** | `6.0.1` | Instant HMR, lightning-fast compilation, and optimized production chunking |
+| **Styling & Design** | **Tailwind CSS** | `3.4.16` | Finance/trading-desk dark theme system (`#0f172a`, `#1e293b`) with fluid responsiveness |
+| **Charting & Visuals** | **Recharts** | `2.13.3` | SVG-based responsive line charts, area deviation charts, diurnal bar graphs, and scatter plots |
+| **Client Cache & State**| **TanStack Query** | `v5.62.0` | Asynchronous data synchronization, query deduplication, background refetch, and skeleton states |
+| **Backend Framework** | **FastAPI** | `0.115.0` | Asynchronous Python framework with high throughput, native async/await, and auto OpenAPI docs |
+| **Schema & Validation**| **Pydantic** | `2.9.2` | Strict data validation and typed serialization for all settlement entities |
+| **Analytics & Math** | **Pandas & NumPy** | `2.2.3` / `2.1.1`| Vectorized time-series manipulation, D-1 gate cutoff filtering, MAE/RMSE/Bias/MAPE calculation |
+| **Async HTTP Client** | **HTTPX** | `0.27.0` | Non-blocking async client with keep-alive connection pooling to stream Elexon BMRS datasets |
+| **In-Memory Caching** | **Cachetools** | `5.5.0` | In-memory `TTLCache` (10-minute expiry) to prevent upstream rate-limiting and ensure sub-50ms latency |
+| **Containerization** | **Docker & Compose**| Multi-stage | Isolated microservice orchestration with production Nginx reverse proxy |
+| **Cloud Deployment** | **Vercel** | Edge / Serverless | Zero-config production deployment with fast global CDN delivery |
+| **Data Authority** | **Elexon BMRS** | Insights Stream API| Official UK electricity market data feeds: `FUELHH` (outturn) and `WINDFOR` (forecasts) |
+
+---
+
+## 4. Key Analytical Logic & Methodology
 
 ### 3.1 The Day-Ahead Decision Rule
 Elexon's `WINDFOR` dataset continuously publishes rolling wind forecasts multiple times daily. To isolate the exact forecast an operator had available when submitting day-ahead market orders:
@@ -77,7 +97,7 @@ For actual generation $A_t$ and forecast $F_t$ across $N$ settlement periods in 
 
 ---
 
-## 4. Repository & File Structure
+## 5. Repository & File Structure
 
 ```
 gridbricks-challenge/
@@ -132,7 +152,7 @@ gridbricks-challenge/
 
 ---
 
-## 5. How to Run the Application
+## 6. How to Run the Application
 
 ### Option A: Using Docker (Recommended)
 Make sure Docker Desktop is running, then run:
@@ -174,7 +194,7 @@ Open `http://localhost:3000` in your browser.
 
 ---
 
-## 6. Cloud Deployment
+## 7. Cloud Deployment
 
 ### Frontend on Vercel
 1. Import the repository into [Vercel](https://vercel.com).
@@ -191,7 +211,7 @@ Open `http://localhost:3000` in your browser.
 
 ---
 
-## 7. Demo Video & Presentation
+## 8. Demo Video & Presentation
 
 Watch the comprehensive 10-minute presentation demonstrating both commercial trading value and the technical engineering implementation:
 
@@ -210,6 +230,6 @@ Watch the comprehensive 10-minute presentation demonstrating both commercial tra
 
 ---
 
-## 8. AI Tools Disclosure
+## 9. AI Tools Disclosure
 
 As explicitly permitted in the assignment brief, this application was developed with the assistance of modern AI agentic workflows (DeepMind Antigravity / Claude 3.7 / Gemini) for architectural scaffolding, rapid API schema validation, automated test harness generation, and CSS design system styling. All data transformations, market cutoff algorithms, and statistical accuracy metrics were verified against official Elexon BMRS regulatory specifications.
